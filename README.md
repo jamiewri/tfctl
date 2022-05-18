@@ -68,3 +68,8 @@ Available Commands:
   plan        Start a plan only run, auto-apply disable by default.
   search      List workspaces that match the supplied tags.
 ```
+
+## Build
+```bash
+go build -o tfctl .
+```
