@@ -13,6 +13,7 @@ If you are looking for a complete CLI tool that orchestrates with Terraform Clou
 Required environment variables
 | Env | Description |
 |-----|-------------|
+| TFE_ADDRESS | `https://app.terraform.io` by default |
 | TFC_ORGANIZATION | The name of your Terraform Cloud organization |
 | TFC_TEAM_TOKEN | [Terraform Cloud team token](https://www.terraform.io/cloud-docs/users-teams-organizations/users#api-tokens) |
 
