@@ -73,3 +73,6 @@ Available Commands:
 ```bash
 go build -o tfctl .
 ```
+
+## Todo
+- [ ] Add support for user customizatible API endpoints for use with private TFE instance.
