@@ -27,6 +27,7 @@ func Execute(appConfig *config.AppConfig, tfc repository.TerraformCloud) {
 	BaseCommand.AddCommand(applyCommand(tfc))
 	BaseCommand.AddCommand(destroyCommand(tfc))
 	BaseCommand.AddCommand(cancelCommand(tfc))
+	BaseCommand.AddCommand(variablesComand(tfc))
 
 	if err := BaseCommand.Execute(); err != nil {
 		fmt.Fprintln(os.Stderr, err)
