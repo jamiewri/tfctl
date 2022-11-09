@@ -3,7 +3,6 @@ package command
 import (
 	"fmt"
 
-	"github.com/jamiewri/tfctl/internal/models"
 	"github.com/jamiewri/tfctl/internal/repository"
 	"github.com/spf13/cobra"
 )
@@ -26,16 +25,15 @@ func variablesComand(tfc repository.TerraformCloud) *cobra.Command {
 	return c
 }
 
-func runListCommand(tfc repository.TerraformCloud, w []string) (*models.VariableList){
+func runListCommand(tfc repository.TerraformCloud, w []string) (){
 
 	// convert ist of strings into tfe.workspace
 	ws := tfc.GetWorkspaceFromName(w[0])
 
 	// pass models.Workspace to tfc
-	variablesList := tfc.GetVariableListFromWorkspace(*ws)
+	variablesList := tfc.GetVariableListFromWorkspace(ws)
 
 	for i := range variablesList.Items {
 		fmt.Println(variablesList.Items[i].Key)
 	}
-	return &models.VariableList{}
 }

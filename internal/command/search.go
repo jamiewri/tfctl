@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/jamiewri/tfctl/internal/models"
+	"github.com/hashicorp/go-tfe"
 	"github.com/jamiewri/tfctl/internal/repository"
 	"github.com/spf13/cobra"
 )
@@ -26,7 +26,7 @@ func searchCommand(tfc repository.TerraformCloud) *cobra.Command {
 	return c
 }
 
-func runSearchCommand(tfc repository.TerraformCloud, tags []string) (models.WorkspaceList){
+func runSearchCommand(tfc repository.TerraformCloud, tags []string) (*tfe.WorkspaceList){
 
 	// Search for matching workspaces
 	workspacesList, err := tfc.GetWorkspacesFromTags(tags)
@@ -35,8 +35,8 @@ func runSearchCommand(tfc repository.TerraformCloud, tags []string) (models.Work
 	}
 
 	// Output matching workspaces
-	for i := range workspacesList.Workspaces {
-		fmt.Println(workspacesList.Workspaces[i].Name)
+	for i := range workspacesList.Items {
+		fmt.Println(workspacesList.Items[i].Name)
 	}
 	return workspacesList
 }

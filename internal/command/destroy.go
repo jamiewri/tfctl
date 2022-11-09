@@ -37,7 +37,7 @@ func runDestroyCommand(tfc repository.TerraformCloud, tags []string) {
 	util.PrintWorkspaceNames(wl)
 
 	// Run a destroy on every workspace
-	for _, w := range wl.Workspaces {
-		tfc.StartDestroy(w)
+	for i := range wl.Items {
+		tfc.StartDestroy(wl.Items[i])
 	}
 }
