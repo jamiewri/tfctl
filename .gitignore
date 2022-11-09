@@ -6,6 +6,7 @@
 *.dylib
 .vscode
 .vscode/launch.json
+tfctl
 # Test binary, built with `go test -c`
 *.test
 
