@@ -16,7 +16,8 @@ func variablesComand(tfc repository.TerraformCloud) *cobra.Command {
 		Use: "variables",
 		Short: "List workspaces that match the supplied tags.",
 		Run: func(cmd *cobra.Command, args []string) {
-			runListCommand(tfc, w)
+			fmt.Println("Variable handling coming soon..")
+			//runListCommand(tfc, w)
 		},
 	}
 
