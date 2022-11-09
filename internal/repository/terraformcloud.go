@@ -20,6 +20,8 @@ type TerraformCloud interface {
 	StartDestroy(models.Workspace)
 	CancelRun(r models.Run)
 	DiscardRun(r models.Run)
+    GetVariableListFromWorkspace(w tfe.Workspace) (*tfe.VariableList)
+	GetWorkspaceFromName(ws string) (*tfe.Workspace)
 }
 
 type terraformCloud struct {
@@ -105,16 +107,41 @@ func (t *terraformCloud) GetWorkspacesFromTags(tags []string) (models.WorkspaceL
 }
 
 // GetWorkspaceFromName takes a workspace name and returns a workspace struct
-func (t *terraformCloud) GetWorkspaceFromName(ws models.Workspace) (*tfe.Workspace) {
+func (t *terraformCloud) GetWorkspaceFromName(ws string) (*tfe.Workspace) {
 	ctx := context.Background()
 
-	workspace, err := t.tfcClient.Workspaces.Read(ctx, t.appConfig.TfcOrg, ws.Name)
+	workspace, err := t.tfcClient.Workspaces.Read(ctx, t.appConfig.TfcOrg, ws)
 	if err != nil {
 	 fmt.Println(err)
     }
+	
 
+//	return &models.Workspace{
+//		ID: workspace.ID,
+//		Name: workspace.Name,
+//	}
 	return workspace
 } 
+
+// GetVariableListFromWorkspace takes a workspace and retruns a variable list string
+func (t *terraformCloud) GetVariableListFromWorkspace(w tfe.Workspace) (*tfe.VariableList) {
+	ctx := context.Background()
+
+	listOptions := &tfe.ListOptions{
+		PageNumber: 1,
+		PageSize: 50,
+	}
+
+	variableListOptions := tfe.VariableListOptions{
+		ListOptions: *listOptions,
+	}
+
+	vl, err := t.tfcClient.Variables.List(ctx, w.ID, &variableListOptions)
+	if err != nil {
+		fmt.Println(err)
+	}
+	 return vl
+}
 
 // StartPlan starts a plan with auto-apply set to false
 func (t *terraformCloud) StartPlan(w models.Workspace) {
@@ -127,7 +154,7 @@ func (t *terraformCloud) StartPlan(w models.Workspace) {
 		AutoApply: tfe.Bool(false),
 	}
 
-	o.Workspace = t.GetWorkspaceFromName(w)
+	o.Workspace = t.GetWorkspaceFromName(w.Name)
 
     p, err := t.tfcClient.Runs.Create(ctx, o)
     if err != nil {
@@ -149,7 +176,7 @@ func (t *terraformCloud) StartApply(w models.Workspace) {
 		AutoApply: tfe.Bool(true),
 	}
 
-	o.Workspace = t.GetWorkspaceFromName(w)
+	o.Workspace = t.GetWorkspaceFromName(w.Name)
 
     p, err := t.tfcClient.Runs.Create(ctx, o)
     if err != nil {
@@ -167,11 +194,11 @@ func (t *terraformCloud) StartDestroy(w models.Workspace) {
 	o := tfe.RunCreateOptions{
 		Workspace: nil,
 		Message: tfe.String("Destroy run started from tfctl"),
-		AutoApply: tfe.Bool(false),
+		AutoApply: tfe.Bool(true),
 		IsDestroy: tfe.Bool(true),
 	}
 
-	o.Workspace = t.GetWorkspaceFromName(w)
+	o.Workspace = t.GetWorkspaceFromName(w.Name)
 
     p, err := t.tfcClient.Runs.Create(ctx, o)
     if err != nil {

@@ -17,3 +17,13 @@ type Run struct {
 	ID string
 	Status string
 }
+
+type Variable struct {
+    ID string
+	Key string
+}
+
+type VariableList struct {
+	Variables []Variable
+}
+
