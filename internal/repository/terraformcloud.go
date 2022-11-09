@@ -9,18 +9,17 @@ import (
 
 	"github.com/hashicorp/go-tfe"
 	"github.com/jamiewri/tfctl/internal/config"
-	"github.com/jamiewri/tfctl/internal/models"
 )
 
 type TerraformCloud interface {
-	GetWorkspacesFromTags([]string) (models.WorkspaceList, error)
-	GetRunsFromWorkspace(w models.Workspace) (models.RunList, error)
-	StartPlan(models.Workspace)
-	StartApply(models.Workspace)
-	StartDestroy(models.Workspace)
-	CancelRun(r models.Run)
-	DiscardRun(r models.Run)
-    GetVariableListFromWorkspace(w tfe.Workspace) (*tfe.VariableList)
+	GetWorkspacesFromTags([]string) (*tfe.WorkspaceList, error)
+	GetRunsFromWorkspace(w *tfe.Workspace) (*tfe.RunList, error)
+	StartPlan(*tfe.Workspace)
+	StartApply(*tfe.Workspace)
+	StartDestroy(*tfe.Workspace)
+	CancelRun(r *tfe.Run)
+	DiscardRun(r *tfe.Run)
+    GetVariableListFromWorkspace(w *tfe.Workspace) (*tfe.VariableList)
 	GetWorkspaceFromName(ws string) (*tfe.Workspace)
 }
 
@@ -36,7 +35,7 @@ func NewTerraformCloud(tfcClient *tfe.Client, ac config.AppConfig) (TerraformClo
 	}
 }
 
-func (t *terraformCloud) GetRunsFromWorkspace(w models.Workspace) (models.RunList, error) {
+func (t *terraformCloud) GetRunsFromWorkspace(w *tfe.Workspace) (*tfe.RunList, error) {
 
 	ctx := context.Background()
 
@@ -53,23 +52,12 @@ func (t *terraformCloud) GetRunsFromWorkspace(w models.Workspace) (models.RunLis
 	if err != nil {
 		fmt.Println(err)
 	}
-
-	runs := make([]models.Run, 0)
-
-	for _, r := range rl.Items {
-		run := models.Run{}
-		run.ID = r.ID
-		run.Status = string(r.Status)
-		runs = append(runs, run)
-	}
 	
-    return models.RunList{
-	    Runs: runs,
-    }, nil
+    return rl, nil
 }
 
 
-func (t *terraformCloud) GetWorkspacesFromTags(tags []string) (models.WorkspaceList, error) {
+func (t *terraformCloud) GetWorkspacesFromTags(tags []string) (*tfe.WorkspaceList, error) {
 
 	// Create context
 	ctx := context.Background()
@@ -89,20 +77,7 @@ func (t *terraformCloud) GetWorkspacesFromTags(tags []string) (models.WorkspaceL
 		log.Fatal(err)
 	}
 
-	// Create slice of models.workspaces
-	workspaces := make([]models.Workspace, 0)
-
-    // Translate tfe.Workspace struct into models.workspaceList
-	for _, workspace := range wl.Items {
-	    ws := models.Workspace{}
-		ws.ID = workspace.ID
-		ws.Name = workspace.Name
-		workspaces = append(workspaces, ws)
-	}
-
-	return models.WorkspaceList{
-		Workspaces: workspaces,
-	}, nil
+	return wl, nil
 }
 
 // GetWorkspaceFromName takes a workspace name and returns a workspace struct
@@ -118,7 +93,7 @@ func (t *terraformCloud) GetWorkspaceFromName(ws string) (*tfe.Workspace) {
 } 
 
 // GetVariableListFromWorkspace takes a workspace and retruns a variable list string
-func (t *terraformCloud) GetVariableListFromWorkspace(w tfe.Workspace) (*tfe.VariableList) {
+func (t *terraformCloud) GetVariableListFromWorkspace(w *tfe.Workspace) (*tfe.VariableList) {
 	ctx := context.Background()
 
 	listOptions := &tfe.ListOptions{
@@ -138,7 +113,7 @@ func (t *terraformCloud) GetVariableListFromWorkspace(w tfe.Workspace) (*tfe.Var
 }
 
 // StartPlan starts a plan with auto-apply set to false
-func (t *terraformCloud) StartPlan(w models.Workspace) {
+func (t *terraformCloud) StartPlan(w *tfe.Workspace) {
 
 	ctx := context.Background()
 
@@ -160,7 +135,7 @@ func (t *terraformCloud) StartPlan(w models.Workspace) {
 }
 
 // StartApply starts a plan with auto-apply set to true
-func (t *terraformCloud) StartApply(w models.Workspace) {
+func (t *terraformCloud) StartApply(w *tfe.Workspace) {
 
 	ctx := context.Background()
 
@@ -182,7 +157,7 @@ func (t *terraformCloud) StartApply(w models.Workspace) {
 }
 
 
-func (t *terraformCloud) StartDestroy(w models.Workspace) {
+func (t *terraformCloud) StartDestroy(w *tfe.Workspace) {
 	ctx := context.Background()
 
 	o := tfe.RunCreateOptions{
@@ -204,7 +179,7 @@ func (t *terraformCloud) StartDestroy(w models.Workspace) {
 }
 
 // CancelRun will cancel the supplied run
-func (t *terraformCloud) CancelRun(r models.Run) {
+func (t *terraformCloud) CancelRun(r *tfe.Run) {
 
 	ctx := context.Background()
 
@@ -220,7 +195,7 @@ func (t *terraformCloud) CancelRun(r models.Run) {
 }
 
 //DiscardRun will discard the supplied run
-func (t *terraformCloud) DiscardRun(r models.Run) {
+func (t *terraformCloud) DiscardRun(r *tfe.Run) {
 	ctx := context.Background()
 
 	rdo := tfe.RunDiscardOptions{

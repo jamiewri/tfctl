@@ -70,23 +70,23 @@ func runCancelCommand(tfc repository.TerraformCloud, tags []string) {
 	util.PrintWorkspaceNames(wl)
 
 	// Run a plan on every workspace
-	for i := range wl.Workspaces {
+	for i := range wl.Items {
 	
 		//find all runs in workspace
-		rl, err := tfc.GetRunsFromWorkspace(wl.Workspaces[i])
+		rl, err := tfc.GetRunsFromWorkspace(wl.Items[i])
 		if err != nil {
 			fmt.Println(err)
 		}
 
-		for i := range rl.Runs {
+		for i := range rl.Items {
 
-			s := rl.Runs[i].Status
+			s := rl.Items[i].Status
 
             // Discard run
             if s == "policy_checked" ||
 			   s == "policy_override" {
 
-			     tfc.DiscardRun(rl.Runs[i])
+			     tfc.DiscardRun(rl.Items[i])
 			     continue
 
             }
@@ -100,7 +100,7 @@ func runCancelCommand(tfc repository.TerraformCloud, tags []string) {
 			   s == "applying" ||
 			   s == "policy_checking" {
 
-			     tfc.CancelRun(rl.Runs[i])
+			     tfc.CancelRun(rl.Items[i])
 			     continue
 
             }

@@ -37,7 +37,7 @@ func runPlanCommand(tfc repository.TerraformCloud, tags []string) {
 	util.PrintWorkspaceNames(wl)
 
 	// Run a plan on every workspace
-	for _, w := range wl.Workspaces {
-		tfc.StartPlan(w)
+	for i := range wl.Items {
+		tfc.StartPlan(wl.Items[i])
 	}
 }
