@@ -60,7 +60,6 @@ func (t *terraformCloud) GetRunsFromWorkspace(w models.Workspace) (models.RunLis
 		run := models.Run{}
 		run.ID = r.ID
 		run.Status = string(r.Status)
-	//	r.Workspace = run.Workspace0
 		runs = append(runs, run)
 	}
 	
@@ -114,12 +113,7 @@ func (t *terraformCloud) GetWorkspaceFromName(ws string) (*tfe.Workspace) {
 	if err != nil {
 	 fmt.Println(err)
     }
-	
 
-//	return &models.Workspace{
-//		ID: workspace.ID,
-//		Name: workspace.Name,
-//	}
 	return workspace
 } 
 
